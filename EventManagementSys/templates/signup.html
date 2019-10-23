@@ -1,0 +1,213 @@
+<!-- ,agskdha -->
+{% extends "layout.html" %}
+{% block content %}
+<script>
+    // var list = {{ servicesOffered| tojson | safe}};
+    var append = "";
+    var i = 1;
+    {% for service in servicesOffered %}
+    append += `<option value=` + i + ` selected>` + "{{ service }}" + `</option>`;
+    i++;
+    {% endfor %}
+
+    var append2 = "";
+    var j = 1;
+    {% for state in stateList %}
+    append2 += `<option value=` + j + ` selected>` + "{{ state }}" + `</option>`;
+    j++;
+    {% endfor %}
+
+    function myfun() {
+        // document.addEventListener('DOMContentLoaded', () => {
+        //     document.querySelector('#optionsForSignUp').onclick = function () {
+        let ele = document.getElementById("optionsForSignup");
+        if (ele.value == '-1') {
+            document.getElementById("signupbutton").disabled = true;
+            document.location.reload();
+        }
+        else if (ele.value == "1") {
+            document.getElementById("signupbutton").disabled = false;
+            let ucon = document.getElementById('userContent');
+            ucon.innerHTML = "";
+            // document.location.reload();
+        }
+        else if (ele.value == "2") {
+            let ucon = document.getElementById('userContent');
+            ucon.innerHTML = `<div class="form-group">
+                    <label for="inputAddress">Address*</label>
+                    <input type="text" class="form-control" id="inputAddress" name = "adderess" placeholder="1234 Main St">
+                    <small id="passwordHelpInline" class="text-muted">
+                        please fill in this format: No, street name or Nagar, Apt. no(if any)</small>
+                </div>
+                <div class="form-group">
+                    <label for="inputAddress">Description</label>
+                    <input type="text" class="form-control" placeholder="Near xyz park" name = "descript">
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputCity">City*</label>
+                        <input type="text" class="form-control" id="inputCity" name="city">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputState">State*</label>
+                        <select id="inputState" class="form-control" name="state">
+                            <option selected>Choose...</option>
+                            `+ append2 + `
+                        </select>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="inputZip">Zip*</label>
+                        <input type="text" class="form-control" id="inputZip" name="zip">
+                    </div>
+                </div>
+                `
+            document.getElementById("signupbutton").disabled = false;
+        }
+        else if (ele.value == '3') {
+            let ucon = document.getElementById('userContent');
+            ucon.innerHTML = `
+            <div class = "form-group col-md-3">
+                    <lable>Website</lable>
+                        <input type="text" class="form-control" placeholder="xyz.org" id = "website" name="website">
+                </div>
+            <div class="form-group">
+                    <label for="inputAddress">Address*</label>
+                    <input type="text" class="form-control" id="inputAddress" name = "adderess" placeholder="1234 Main St">
+                    <small id="passwordHelpInline" class="text-muted">
+                        please fill in this format: No, street name or Nagar, Apt. no(if any)</small>
+                </div>
+                <div class="form-group">
+                    <label for="inputAddress">Description</label>
+                    <input type="text" class="form-control" placeholder="Near xyz park" name = "descript">
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputCity">City*</label>
+                        <input type="text" class="form-control" id="inputCity" name="city">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputState">State*</label>
+                        <select id="inputState" class="form-control" name="state">
+                            <option selected>Choose...</option>
+                            `+ append2 + `
+                        </select>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="inputZip">Zip*</label>
+                        <input type="text" class="form-control" id="inputZip" name="zip">
+                    </div>
+                </div>
+                `
+            document.getElementById("signupbutton").disabled = false;
+        }
+        else if (ele.value == "4") {
+            let ucon = document.getElementById('userContent');
+            let i = 1;
+            ucon.innerHTML = `
+            <div class = "form-group col-md-3">
+                    <lable>Website</lable>
+                        <input type="text" class="form-control" placeholder="xyz.org" id="website" name="website">
+                </div>
+                <div class = "form-group col-md-3">
+                        <label class="my-1 mr-2" for="inlineFormCustomSelectPref">service</label>
+                    <select class="custom-select my-1" id="servicesOffered" name = "services">
+                            <option value="-1">Choose...</option>
+                        `+ append + `
+                    </select >
+                </div >
+        <div class="form-group">
+            <label for="inputAddress">Address*</label>
+            <input type="text" class="form-control" id="inputAddress" name = "adderess" placeholder="1234 Main St">
+                <small id="passwordHelpInline" class="text-muted">
+                    please fill in this format: No, street name or Nagar, Apt. no(if any)</small>
+                </div>
+            <div class="form-group">
+                <label for="inputAddress">Description</label>
+                <input type="text" class="form-control" placeholder="Near xyz park" name="descript">
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputCity">City*</label>
+                        <input type="text" class="form-control" id="inputCity" name="city">
+                    </div>
+                        <div class="form-group col-md-4">
+                            <label for="inputState">State*</label>
+                            <select id="inputState" class="form-control" name="state">
+                                <option selected>Choose...</option>
+                                `+ append2 + `
+                            </select>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="inputZip">Zip*</label>
+                            <input type="text" class="form-control" id="inputZip" name="zip">
+                    </div>
+                        `
+            document.getElementById("signupbutton").disabled = false;
+        }
+        //     };
+        // });
+
+    }
+</script>
+<div class="container">
+    <div class="jumbotron">
+        <div class="jumbotron-content">
+            <h1>SignUp here</h1>
+            <form id="signupForm" href="{{url_for('signup')}}" method='POST'>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputEmail4">Email*</label>
+                        <input type="email" class="form-control" id="inputEmail4" placeholder="Email" name="email">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="inputPassword4">Password*</label>
+                        <input type="password" class="form-control" id="inputPassword4" placeholder="Password"
+                            name="password">
+                    </div>
+                    <div class="col">
+                        <lable>First Name*</lable>
+                        <input type="text" class="form-control" placeholder="First name" id="inputFirstN"
+                            name="firstName">
+                    </div>
+                    <div class="col">
+                        <lable>Last Name*</lable>
+                        <input type="text" class="form-control" placeholder="Last name" id="inputLastN" name="lastName">
+                    </div>
+                    <div class="col">
+                        <lable>Phone Number</lable>
+                        <input type="text" class="form-control" placeholder="Phone No." id="phoneNo" name="phone">
+                    </div>
+                </div>
+                <div class="form-group col-md-3 mx-auto">
+                    <label class="my-1 mr-2" for="inlineFormCustomSelectPref">Who am I ...*</label>
+                    <select class="custom-select my-1" id="optionsForSignup" onchange="myfun();" name="options">
+                        <option value="-1" selected>Choose...</option>
+                        <option value="1">Event Attender</option>
+                        <option value="2">Client</option>
+                        <option value="3">Sponser</option>
+                        <option value="4">Service Provider</option>
+                    </select>
+                </div>
+                <div id="userContent">
+
+                </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="gridCheck" name="check">
+                <label class="form-check-label" for="gridCheck">
+                    Accept our <a href="{{url_for('termsncond')}}">terms & conditions</a>
+                </label>
+            </div>
+        </div>
+        {% if error %}
+        <div class="alert alert-danger mx-5" role="alert">{{alert}}</div>
+        {% endif %}
+        <div>
+            <button type="submit" class="btn btn-primary" id="signupbutton" disabled>Sign in</button>
+        </div>
+        </form>
+    </div>
+</div>
+</div>
+{% endblock %}
