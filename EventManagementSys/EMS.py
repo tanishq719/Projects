@@ -1,9 +1,11 @@
 import os
-from flask import Flask, render_template, request, session, jsonify, json
+from flask import Flask, render_template, request, session, jsonify, json, redirect, flash
 from flask_session import Session
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from models.tables import *
+from functools import wraps
+import pickle
 
 app = Flask(__name__)
 
@@ -17,15 +19,34 @@ db.init_app(app)
 
 bcrypt = Bcrypt(app)
 
+def check_login(f):
+    @wraps(f)
+    def isLoggedIn():
+        if 'loggedIn' in session :
+            return f(True)
+        else:
+            return f(False)
+    return isLoggedIn
 
 @app.route('/')
-def index():
+@check_login
+def index(loggedIn):
     db.create_all()
-    return render_template('index.html', notLoggedin=True)
+    if loggedIn:
+        # print(session['User'])
+        o1 = session.get('User')
+        u1 = pickle.loads(o1)
+        return render_template('index.html', loggedIn = loggedIn, name = u1.getFName() + " "+ u1.getLName(), options = u1.getDropDown())
+
+    return render_template('index.html', loggedIn = loggedIn)
 
 
 @app.route('/signup', methods=["GET", "POST"])
-def signup():
+@check_login
+def signup(loggedIn):
+    if loggedIn:
+        # return redirect(request.referrer)
+        return render_template('error.html', alert="already logged in, logout first")
     stateList = ['Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jammu and Kashmir', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal']
     list1 = ['Cattring', 'Stage Decorater', 'Electricity', 'Water Supplier']
     if(request.method == 'POST'):
@@ -47,43 +68,48 @@ def signup():
         service_selected = request.form.get("services")
 
         # some checks on the form :
-        if(len(acceptTermsNCond) == 0):     # getlist will form list in anyway there in case of not selecting its length will be 0
-            return render_template('signup.html', notLoggedin=True, servicesOffered=list1, stateList = stateList, error=True, alert="terms and conditions are not accepted")
+        if(len(acceptTermsNCond) == 0):     # getlist will form list in anyway, there in case of not selecting its length will be 0
+            return render_template('signup.html', loggedIn=False, servicesOffered=list1, stateList = stateList, error=True, alert="terms and conditions are not accepted")
     
         duplicatAtt = Event_Attender.query.filter_by(
                 ea_email=email).first()
         
         if(duplicatAtt is not None):
-            return render_template('signup.html', notLoggedin=True, servicesOffered=list1, stateList = stateList,error=True, alert="user with the same email id already exist")
+            return render_template('signup.html', loggedIn=False, servicesOffered=list1, stateList = stateList,error=True, alert="user with the same email id already exist")
 
         if(userType == '-1'):
-            return render_template('signup.html', notLoggedin=True, servicesOffered=list1, stateList = stateList,error=True, alert="who i am not selected")
+            return render_template('signup.html', loggedIn=False, servicesOffered=list1, stateList = stateList,error=True, alert="who i am not selected")
         
         # based on selected user type data is feeded here:
         elif(userType == '1'):
         
             if((email == "") or (password == "") or (firstName == "") or (lastName == "")):
-                return render_template('signup.html', notLoggedin=True, servicesOffered=list1, stateList = stateList,error=True, alert="fields having * are mandatory ")
+                return render_template('signup.html', loggedIn=False, servicesOffered=list1, stateList = stateList,error=True, alert="fields having * are mandatory ")
             
             attender = Event_Attender(
                 ea_email = email, first_name = firstName, last_name = lastName, password = password, ph_no = phone)
             db.session.add(attender)
+            u1 = 0
+            pickle.dumps(attender, u1)
+            session['User'] = u1
+            session['UserType'] = 'EVENT_ATTENDER'
+            session['loggedIn'] = 'YES'
             db.session.commit()
+            return redirect('/')
             
-            return render_template('index.html', notLoggedin=False)
                 
         elif(userType == '2'):
             if((email == "") or (password == "") or (firstName == "") or (lastName == "") or (adderess == "") or (state == "") or (city == "") or (zzip == "")):
-                return render_template('signup.html', notLoggedin=True, servicesOffered=list1, stateList = stateList,error=True, alert="fields having * are mandatory ")
+                return render_template('signup.html', loggedIn=False, servicesOffered=list1, stateList = stateList,error=True, alert="fields having * are mandatory ")
 
             add = adderess.split(",")
 
             if(len(add) == 3):
                 add_id = add[0].strip() + add[1].strip()+add[2].strip()+ zzip
             elif(len(add) == 1):
-                return render_template('signup.html', notLoggedin=True, servicesOffered=list1, stateList = stateList,error=True, alert="in adderess no and street name are compulsary")
+                return render_template('signup.html', loggedIn=False, servicesOffered=list1, stateList = stateList,error=True, alert="in adderess no and street name are compulsary")
             elif(add[1].isdigit()):
-                return render_template('signup.html', notLoggedin=True, servicesOffered=list1, stateList = stateList,error=True, alert="in adderess no and street name are compulsary")
+                return render_template('signup.html', loggedIn=False, servicesOffered=list1, stateList = stateList,error=True, alert="in adderess no and street name are compulsary")
             else:
                 add_id = add[0].strip() + add[1].strip()+ zzip
 
@@ -99,22 +125,26 @@ def signup():
             client = Client(c_email_id = email, first_name = firstName, last_name = lastName, password = password, ph_no = phone, adderess_id = add_id)
 
             db.session.add(client)
+            u1 = 0
+            pickle.dumps(client, u1)
+            session['User'] = u1
+            session['UserType'] = 'CLIENT'
+            session['loggedIn'] = 'YES'
             db.session.commit()
-
-            return render_template('index.html', notLoggedin=False)
+            return redirect('/')
 
         elif(userType == '3'):
             if((email == "") or (password == "") or (firstName == "") or (lastName == "") or (adderess == "") or (state == "") or (city == "") or (zzip == "") or (website == "")):
-                return render_template('signup.html', notLoggedin=True, servicesOffered=list1, stateList = stateList,error=True, alert="fields having * are mandatory ")
+                return render_template('signup.html', loggedIn=False, servicesOffered=list1, stateList = stateList,error=True, alert="fields having * are mandatory ")
 
             add = adderess.split(",")
 
             if(len(add) == 3):
                 add_id = add[0].strip() + add[1].strip()+add[2].strip()+ zzip
             elif(len(add) == 1):
-                return render_template('signup.html', notLoggedin=True, servicesOffered=list1, stateList = stateList,error=True, alert="in adderess no and street name are compulsary")
+                return render_template('signup.html', loggedIn=False, servicesOffered=list1, stateList = stateList,error=True, alert="in adderess no and street name are compulsary")
             elif(add[1].isdigit()):
-                return render_template('signup.html', notLoggedin=True, servicesOffered=list1, stateList = stateList,error=True, alert="in adderess no and street name are compulsary")
+                return render_template('signup.html', loggedIn=False, servicesOffered=list1, stateList = stateList,error=True, alert="in adderess no and street name are compulsary")
             else:
                 add_id = add[0].strip() + add[1].strip()+ zzip
 
@@ -129,24 +159,27 @@ def signup():
 
             sponser = Sponser(semail_id = email, s_fname = firstName, s_lname = lastName, password = password, ph_no = phone, website = website, adderess_id = add_id)
 
-            db.session.add(sponser)
+            u1 = 0
+            pickle.dumps(sponser, u1)
+            session['User'] = u1
+            session['UserType'] = 'Sponser'
+            session['loggedIn'] = 'YES'
             db.session.commit()
-
-            return render_template('index.html', notLoggedin=False)
+            return redirect('/')
 
         elif(userType == '4'):
 
             if((email == "") or (password == "") or (firstName == "") or (lastName == "") or (adderess == "") or (state == "") or (city == "") or (zzip == "") or (website == "") or (service_selected == "")):
-                return render_template('signup.html', notLoggedin=True, servicesOffered=list1, stateList=stateList, error=True, alert="fields having * are mandatory")
+                return render_template('signup.html', loggedIn=False, servicesOffered=list1, stateList=stateList, error=True, alert="fields having * are mandatory")
 
             add = adderess.split(",")
 
             if(len(add) == 3):
                 add_id = add[0].strip() + add[1].strip()+add[2].strip()+ zzip
             elif(len(add) == 1):
-                return render_template('signup.html', notLoggedin=True, servicesOffered=list1, stateList = stateList,error=True, alert="in adderess no and street name are compulsary")
+                return render_template('signup.html', loggedIn=False, servicesOffered=list1, stateList = stateList,error=True, alert="in adderess no and street name are compulsary")
             elif(add[1].isdigit()):
-                return render_template('signup.html', notLoggedin=True, servicesOffered=list1, stateList = stateList,error=True, alert="in adderess no and street name are compulsary")
+                return render_template('signup.html', loggedIn=False, servicesOffered=list1, stateList = stateList,error=True, alert="in adderess no and street name are compulsary")
             else:
                 add_id = add[0].strip() + add[1].strip()+ zzip
                 
@@ -169,19 +202,82 @@ def signup():
             print(type(serv_id))
             service_pro = Service_Provider(sp_email_id = email, sp_fname = firstName, sp_lname = lastName, password = password, ph_no = phone, website = website, adderess_id = add_id, ser_id = serv_id.ser_id)
 
-            db.session.add(service_pro)
+            u1 = 0
+            pickle.dumps(service_pro, u1)
+            session['User'] = u1
+            session['UserType'] = 'SERVICE_PROVIDER'
+            session['loggedIn'] = 'YES'
             db.session.commit()
-
-            return render_template('index.html', notLoggedin=True)
+            return redirect('/')
         
-    return render_template('signup.html', notLoggedin=True, servicesOffered=list1, stateList = stateList, error=False, alert="")
+    return render_template('signup.html', loggedIn=False, servicesOffered=list1, stateList = stateList, error=False, alert="")
 
 
-@app.route('/login')
-def login():
+@app.route('/login', methods= ['GET','POST'])
+@check_login
+def login(loggedIn):
+    
+    if loggedIn:
+        # return redirect(request.referrer)
+        return render_template('error.html', alert="already logged in")
 
-    return render_template('login.html', notLoggedin=False)
+    if(request.method == "POST"):
+        email = request.form.get("email")
+        password = request.form.get("password") 
+        users = [Event_Attender, Sponser, Service_Provider, Client, Company_Employee]
+       
+        for i in range(5):
+            output, user = users[i].check_credentials(email,password)
+            print(users[i].__name__)
+            if output == 'PWSMATCHED':
+                u1 = pickle.dumps(user)
+                session['User'] = u1
+                session['UserType'] = users[i].__name__.upper()
+                session['loggedIn'] = 'YES'
+                return redirect('/')
+            
+            elif output == 'PWSNOTMATCHED':
+                flash("password doesnt matches with the email")
+                break
+            else:
+                flash("Invalid email")
+                break
 
+        return render_template('login.html', loggedIn=loggedIn)
+        
+    return render_template('login.html', loggedIn=loggedIn)
+
+@app.route('/logout')
+@check_login
+def logout(loggedIn):
+    if not loggedIn:
+        return render_template('error.html', alert="You are already logged out")
+    else:
+        session.pop('User', None)
+        session.pop('UserType',None)
+        session.pop('loggedIn', None)
+        return render_template('index.html', loggedIn = not(loggedIn))
+
+
+@app.route('/profile')
+@check_login
+def profile(loggedIn):
+    return render_template('profile.html', loggedIn = loggedIn)
+
+@app.route('/history')
+@check_login
+def history(loggedIn):
+    return render_template('history.html', loggedIn = loggedIn)
+
+@app.route('/notification')
+@check_login
+def notification(loggedIn):
+    return render_template('notification.html', loggedIn = loggedIn)
+
+@app.route('/feedback')
+@check_login
+def feedback(loggedIn):
+    return render_template('feedback.html', loggedIn = loggedIn)
 
 @app.route('/termsncond')
 def termsncond():

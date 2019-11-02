@@ -14,10 +14,15 @@
     <link rel="icon" href="{{url_for('static', filename = 'logo.png')}}" sizes="32x32" type="image/png">
     <link rel="icon" href="{{url_for('static', filename = 'logo.png')}}" sizes="16x16" type="image/png">
     <!-- <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style1.css')}}"> -->
-    <title>EvenTana</title>
+    <title>EvenTiana</title>
+    <!-- <style>
+        body {
+            background-color: red;
+        }
+    </style> -->
 </head>
 
-<body>
+<body background="{{url_for('static', filename = 'background11.jpg')}}" style="opacity:0.9">
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <img src="{{url_for('static', filename = 'logo.png')}}" , height="40" , width="150"><a class="navbar-brand"
@@ -45,7 +50,7 @@
                 </li>
             </ul>
             <ul class="navbar-nav ml-auto">
-                {% if notLoggedin %}
+                {% if not loggedIn%}
                 <li class="nav-item active">
                     <a href="{{url_for('login')}}"><button type="button"
                             class="btn btn-outline-warning">Login</button></a>
@@ -59,14 +64,12 @@
                 <div class="btn-group mr-5">
                     <button type="button" class="btn btn-outline-success dropdown-toggle" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
-                        Usershggjhgjhgh
+                        {{name}}
                     </button>
                     <div class="dropdown-menu dropdown-menu-left mr-5">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another</a>
-                        <a class="dropdown-item" href="#">Something</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Separated</a>
+                        {%for opt in options%}
+                        <a class="dropdown-item" href="{{url_for(options[opt])}}">{{opt}}</a>
+                        {%endfor%}
                     </div>
                 </div>
                 {% endif %}
@@ -81,7 +84,7 @@
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    <script src=" https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
