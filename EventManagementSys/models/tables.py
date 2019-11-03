@@ -558,8 +558,8 @@ class Old_CompanyDatabase(db.Model):
 #  	FOR EACH ROW
 #  	EXECUTE PROCEDURE transfer_old_data();
 
-# insert into company_center values('cc@email1.com', '123456789', '131Mahavir Nagar452012');
-# insert into company_employee values('123456789', 'Tanishq','Shrivastava','Branch Manager', 'cc@email1.com', NOW(), 'tanishqshrivastava01@gmail.com', 'abc123', '123456789','131Mahavir Nagar452012');
+# insert into company_center values('cc@email1.com', '123456789', '2xyz12345');
+# insert into company_employee values('123456789', 'Tanishq','Shrivastava','Branch Manager', 'cc@email1.com', NOW(), 'tanishqshrivastava01@gmail.com', 'abc123', '123456789','2xyz12345');
 # update company_employee set cc_email_id = 'cc@email2.com' where ssn = '123456789';
 
 
