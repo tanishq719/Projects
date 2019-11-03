@@ -89,8 +89,8 @@ def signup(loggedIn):
             attender = Event_Attender(
                 ea_email = email, first_name = firstName, last_name = lastName, password = password, ph_no = phone)
             db.session.add(attender)
-            u1 = 0
-            pickle.dumps(attender, u1)
+       
+            u1 = pickle.dumps(attender)
             session['User'] = u1
             session['UserType'] = 'EVENT_ATTENDER'
             session['loggedIn'] = 'YES'
@@ -125,8 +125,7 @@ def signup(loggedIn):
             client = Client(c_email_id = email, first_name = firstName, last_name = lastName, password = password, ph_no = phone, adderess_id = add_id)
 
             db.session.add(client)
-            u1 = 0
-            pickle.dumps(client, u1)
+            u1 = pickle.dumps(client)
             session['User'] = u1
             session['UserType'] = 'CLIENT'
             session['loggedIn'] = 'YES'
@@ -159,8 +158,7 @@ def signup(loggedIn):
 
             sponser = Sponser(semail_id = email, s_fname = firstName, s_lname = lastName, password = password, ph_no = phone, website = website, adderess_id = add_id)
 
-            u1 = 0
-            pickle.dumps(sponser, u1)
+            u1 = pickle.dumps(sponser)
             session['User'] = u1
             session['UserType'] = 'Sponser'
             session['loggedIn'] = 'YES'
@@ -202,8 +200,7 @@ def signup(loggedIn):
             print(type(serv_id))
             service_pro = Service_Provider(sp_email_id = email, sp_fname = firstName, sp_lname = lastName, password = password, ph_no = phone, website = website, adderess_id = add_id, ser_id = serv_id.ser_id)
 
-            u1 = 0
-            pickle.dumps(service_pro, u1)
+            u1 = pickle.dumps(service_pro)
             session['User'] = u1
             session['UserType'] = 'SERVICE_PROVIDER'
             session['loggedIn'] = 'YES'
