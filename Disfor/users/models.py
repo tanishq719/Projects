@@ -67,5 +67,5 @@ class Notification(models.Model):
         return '{} notif'.format(self.user_id)
 
     class Meta:
-        db_table  = 'notification'
+        db_table  = 'notifications'
 

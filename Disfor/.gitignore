@@ -1,2 +1,3 @@
 .vscode/*
 disfor/var.py
+**/__pycache__/**
