@@ -30,9 +30,9 @@ class Group(models.Model):
 
     g_blocks_u          = models.ManyToManyField('users.Users',related_name='blocked_by_grp', through='Grp_blocks_user', blank=True)
 
-    g_blocks_g          = models.ManyToManyField('self',related_name='blocked_by_grp', through='Grp_blocks_grp', blank=True, null=True)
+    g_blocks_g          = models.ManyToManyField('self',related_name='blocked_by_grp', through='Grp_blocks_grp', blank=True)
 
-    g_deletes_g         = models.ManyToManyField('self',related_name='deleted_by_grp', through='Grp_deletes_grp', blank=True, null=True)
+    g_deletes_g         = models.ManyToManyField('self',related_name='deleted_by_grp', through='Grp_deletes_grp', blank=True)
 
 
     def __str__(self):
@@ -116,5 +116,3 @@ class Grp_deletes_grp(models.Model):
     class Meta:
         db_table = 'grp_deleted_grp'
         unique_together = (('grp_id_from','grp_id_to'))
-
-
