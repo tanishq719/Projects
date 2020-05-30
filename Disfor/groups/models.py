@@ -19,6 +19,7 @@ class Group(models.Model):
     reputation          = models.IntegerField(default=0,blank=True)
     subscriber_count    = models.IntegerField(default=0,blank=True)
     notification_q      = ArrayField(models.BigIntegerField(null=True,blank=True),default=default_list, blank=True, null= True)
+    dp                  = models.CharField(max_length=200, blank=True, null=True)
 
     g_parent_id         = models.ForeignKey('self', db_column='g_parent_id', on_delete=models.CASCADE, blank= True,null=True)
     grp_admin           = models.ForeignKey('users.Users', db_column='grp_admin', related_name= 'grp_admin',on_delete=models.PROTECT, blank=False, null=False)
