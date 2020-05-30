@@ -14,7 +14,7 @@ class Users(models.Model):
     dislike_count       = models.IntegerField(default=0,blank=True)
     reply_count         = models.IntegerField(default=0,blank=True)
     # discription about user
-    description         = models.CharField(max_length = 200, null=False, blank=False)
+    description         = models.CharField(max_length = 200, default = "null",null=False, blank=False)
     dp                  = models.CharField(max_length = 100, null=True, blank=True)
 
     u_relate_u          = models.ManyToManyField('self',through='User_block_user', blank=True, symmetrical=False)
