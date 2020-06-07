@@ -4,7 +4,7 @@ from django.contrib.postgres.fields import ArrayField
 class Users(models.Model):
     username            = models.CharField(max_length = 25, primary_key = True)
     first_name          = models.CharField(max_length = 25, null=False, blank=False)
-    last_name           = models.CharField(max_length = 25, null=True, blank=True)
+    last_name           = models.CharField(max_length = 25, null=False, blank=False)
     join_date           = models.DateField(auto_now_add=True) # doubtfull
     email               = models.EmailField(null=False, blank=False, unique=True, max_length=60)
     last_active_date    = models.DateTimeField(auto_now = True) # doubtful
@@ -15,7 +15,7 @@ class Users(models.Model):
     reply_count         = models.IntegerField(default=0,blank=True)
     # discription about user
     description         = models.CharField(max_length = 200, default = "null",null=False, blank=False)
-    dp                  = models.CharField(max_length = 100, null=True, blank=True)
+    dp                  = models.ImageField(upload_to='profile_image', blank=True)
 
     u_relate_u          = models.ManyToManyField('self',through='User_block_user', blank=True, symmetrical=False)
     #u1.u_relate_u.add(u2)
