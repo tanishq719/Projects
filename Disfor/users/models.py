@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.fields import ArrayField, JSONField
 
 class Users(models.Model):
     username            = models.CharField(max_length = 25, primary_key = True)
@@ -48,7 +48,7 @@ class User_block_user(models.Model):
     # t2 = Table2.objects.get(some_parameter=value_u_want)
     # t2.users_set.all()    will give the objects of users related with t2
     def __str__(self):
-        return  '{} - {}'.format(self.username_1, self.username_2)
+        return  '{} blocks {}'.format(self.username_1, self.username_2)
 
     class Meta:
         db_table        = 'user_block_user'
@@ -56,19 +56,19 @@ class User_block_user(models.Model):
 
 
 class Notification(models.Model):
-    
-    def default_list():
-        return []
     #                   base_field        
-    likes       = ArrayField(models.BigIntegerField(null=True,blank=True),default=default_list)
-    dislikes    = ArrayField(models.BigIntegerField(null=True,blank=True),default=default_list)
-    reply       = ArrayField(models.BigIntegerField(null=True,blank=True), default=default_list)
+    # likes       = ArrayField(models.BigIntegerField(null=True,blank=True),default=default_list)
+    # dislikes    = ArrayField(models.BigIntegerField(null=True,blank=True),default=default_list)
+    # reply       = ArrayField(models.BigIntegerField(null=True,blank=True), default=default_list)
 
-    user_id     = models.ForeignKey(Users, db_column='user_id', blank=False, primary_key=True, on_delete=models.CASCADE, related_name='my_notification')
+    user_id         = models.ForeignKey(Users, db_column='user_id', blank=False, on_delete=models.CASCADE, related_name='my_notification')
+    other_user_id   = models.ForeignKey(Users, db_column='other_user_id', blank=False, on_delete=models.CASCADE, related_name='sent_notification_to' )
+    notification    = JSONField()
 
     def __str__(self):
-        return '{} notif'.format(self.user_id)
+        return '{} notify {}'.format(self.other_user_id,self.user_id)
 
     class Meta:
         db_table  = 'notifications'
+        unique_together = (("user_id","other_user_id"))
 
