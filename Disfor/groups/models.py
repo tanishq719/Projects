@@ -1,11 +1,8 @@
 import uuid
 from django.db import models
-from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.fields import JSONField
 
 class Group(models.Model):
-
-    def default_list():
-        return []
 
     CHOICES = [
         ('PUB', 'Public'),
@@ -18,10 +15,10 @@ class Group(models.Model):
     description         = models.TextField(null=False,blank=False)
     reputation          = models.IntegerField(default=0,blank=True)
     subscriber_count    = models.IntegerField(default=0,blank=True)
-    notification_q      = ArrayField(models.BigIntegerField(null=True,blank=True),default=default_list, blank=True, null= True)
+    notification_q      = JSONField()
     dp                  = models.CharField(max_length=200, blank=True, null=True)
 
-    g_parent_id         = models.ForeignKey('self', db_column='g_parent_id', on_delete=models.CASCADE, blank= True,null=True)
+    g_parent_id         = models.ForeignKey('self', db_column='g_parent_id', on_delete=models.CASCADE, blank= False,null=False)
     grp_admin           = models.ForeignKey('users.Users', db_column='grp_admin', related_name= 'grp_admin',on_delete=models.PROTECT, blank=False, null=False)
     # Prevent deletion of the referenced object by raising ProtectedError, a subclass of django.db.IntegrityError.
 
@@ -44,8 +41,11 @@ class Group(models.Model):
 
 
 class Group_criteria(models.Model):
+    # criteria is for 2nd degree reply and group creation
+    # separate table is created as only public group will have requirement for criteria 
     grp_id          = models.ForeignKey(Group, to_field='grp_id', db_column = 'grp_id', primary_key=True, related_name='see_criteria', on_delete=models.CASCADE)
-    criteria_value  = models.IntegerField(default=0, blank=False, null=False)
+    criteria_value  = models.CharField(max_length=20, null=False, blank=False)  # format : reply_criteria, group_forming_criteria
+                                                                                # ex: 100, 1000
 
     def __str__(self):
         return '{} criteria'.format(self.grp_id)
@@ -55,8 +55,8 @@ class Group_criteria(models.Model):
 
 
 class Has_members(models.Model):
-    grp_id      = models.ForeignKey(to=Group, db_column='grp_id', related_name='grp_members', on_delete=models.CASCADE, null=False, blank= False)
-    user_id    = models.ForeignKey(to='users.Users', db_column='user_id', related_name = 'member_user_id', on_delete=models.PROTECT, null=False, blank=False)
+    grp_id      = models.ForeignKey(to=Group, db_column='grp_id', related_name='grp_members', on_delete=models.CASCADE, null=True, blank= False)
+    user_id    = models.ForeignKey(to='users.Users', db_column='user_id', related_name = 'member_user_id', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return '{} members'.format(self.grp_id)
@@ -67,13 +67,11 @@ class Has_members(models.Model):
 
 
 class Has_followers(models.Model):
-    def default_list():
-        return []
 
-    grp_id      = models.ForeignKey(to=Group, db_column='grp_id', related_name='grp_followers', on_delete=models.CASCADE, null=False, blank= False)
-    user_id     = models.ForeignKey(to='users.Users', db_column='user_id', related_name = 'follower_user_id', on_delete=models.CASCADE, null=False, blank=False)
+    grp_id      = models.ForeignKey(to=Group, db_column='grp_id', related_name='grp_followers', on_delete=models.CASCADE, null=True, blank= False)
+    user_id     = models.ForeignKey(to='users.Users', db_column='user_id', related_name = 'follower_user_id', on_delete=models.SET_NULL, null=True, blank=False)
     yes_notify      = models.CharField(max_length=1, null=False, blank=False)
-    notification_q  = ArrayField(models.BigIntegerField(null=True,blank=True),default=default_list, blank=True, null= True)
+    notification_q  = JSONField()
 
     def __str__(self):
         return '{} followers'.format(self.grp_id)
@@ -85,7 +83,7 @@ class Has_followers(models.Model):
 
 class Grp_blocks_user(models.Model):
     grp_id      = models.ForeignKey(to=Group, db_column='grp_id', related_name='grp_blocked_usr', on_delete=models.CASCADE, null=False, blank= False)
-    user_id     = models.ForeignKey(to='users.Users', db_column='user_id', related_name = 'blocked_user_id', on_delete=models.DO_NOTHING, null=False, blank=False)
+    user_id     = models.ForeignKey(to='users.Users', db_column='user_id', related_name = 'blocked_user_id', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return '{} blocked {}'.format(self.grp_id,self.user_id)
@@ -97,7 +95,7 @@ class Grp_blocks_user(models.Model):
 
 class Grp_blocks_grp(models.Model):
     grp_id_from     = models.ForeignKey(to=Group, db_column='grp_id_from', related_name='grp_blocked_grp', on_delete=models.CASCADE, null=False, blank= False)
-    grp_id_to       = models.ForeignKey(to=Group, db_column='grp_id_to', related_name='blocked_grp_id', on_delete=models.DO_NOTHING, null=False, blank= False)
+    grp_id_to       = models.ForeignKey(to=Group, db_column='grp_id_to', related_name='blocked_grp_id', on_delete=models.SET_NULL, null=True, blank= True)
 
     def __str__(self):
         return '{} blocked {}'.format(self.grp_id_from,self.grp_id_to)
@@ -110,6 +108,7 @@ class Grp_blocks_grp(models.Model):
 class Grp_deletes_grp(models.Model):
     grp_id_from     = models.ForeignKey(to=Group, db_column='grp_id_from', related_name='grp_deleted_grp', on_delete=models.CASCADE, null=False, blank= False)
     grp_id_to       = models.ForeignKey(to=Group, db_column='grp_id_to', related_name='deleted_grp_id', on_delete=models.DO_NOTHING, null=False, blank= False)
+    reason          = JSONField()
 
     def __str__(self):
         return '{} deleted {}'.format(self.grp_id_from,self.grp_id_to)

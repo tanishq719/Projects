@@ -3,8 +3,9 @@ from .models import *
 from .reply_models import *
 
 my_another_models = [
-    Thread, Thread_has_parent_grp, User_delete_thread,
-    Reply, Likes, Dislikes, User_delete_reply, Image
+    Thread,  Grp_closes_thread,
+    Reply, Likes, Dislikes, User_delete_reply,
+    Group_closes_reply,Image
 ]
 
 admin.site.register(my_another_models)

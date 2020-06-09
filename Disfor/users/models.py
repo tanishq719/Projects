@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.postgres.fields import ArrayField, JSONField
+from django.contrib.postgres.fields import JSONField
 
 class Users(models.Model):
     username            = models.CharField(max_length = 25, primary_key = True)
@@ -33,6 +33,7 @@ class Users(models.Model):
     # make_password(password, salt=None, hasher='default')
     # is_password_usable(encoded_password)
 
+#@@@@ USERS HISTORY TABLE @@@@
 
 class User_block_user(models.Model):
     #can assign values in username_1 as ra1.username_1 = u1
