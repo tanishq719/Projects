@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from django.contrib.postgres.fields import JSONField
+from PIL import Image
 
 class Group(models.Model):
 
@@ -16,7 +17,7 @@ class Group(models.Model):
     reputation          = models.IntegerField(default=0,blank=True)
     subscriber_count    = models.IntegerField(default=0,blank=True)
     notification_q      = JSONField()
-    dp                  = models.CharField(max_length=200, blank=True, null=True)
+    dp                  = models.ImageField(upload_to='profile_image', blank=False, default='user.png')
 
     g_parent_id         = models.ForeignKey('self', db_column='g_parent_id', on_delete=models.CASCADE, blank= False,null=False)
     grp_admin           = models.ForeignKey('users.Users', db_column='grp_admin', related_name= 'grp_admin',on_delete=models.PROTECT, blank=False, null=False)
@@ -38,6 +39,20 @@ class Group(models.Model):
         
     class Meta:
         db_table = 'group'
+
+    def __unicode__(self):
+        return '{0}'.format(self.dp)
+
+    def save(self):
+        if not self.dp:
+            return
+
+        super(Group, self).save()
+        image = Image.open(self.dp)
+        (width, height) = image.size
+        size = ( 200, 200)
+        image = image.resize(size, Image.ANTIALIAS)
+        image.save(self.dp.path)
 
 
 class Group_criteria(models.Model):

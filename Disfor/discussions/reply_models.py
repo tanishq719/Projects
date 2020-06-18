@@ -1,6 +1,6 @@
 import uuid
 from django.db import models
-from django.contrib.postgres.fields import JSONField
+from django.contrib.postgres.fields import JSONField,ArrayField
 
 class Reply(models.Model):
     reply_id        = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -82,7 +82,7 @@ class Group_closes_reply(models.Model):
 
 class Image(models.Model):
     img_id      = models.IntegerField(primary_key=True)
-    link_to_img = models.CharField(max_length=100, null=False, blank=False)
+    img = ArrayField(models.ImageField(upload_to='reply_img',blank=True))
 
     reply_id    = models.ForeignKey(Reply, db_column='reply_id', related_name='related_img', on_delete=models.CASCADE, blank=True, null=False)
 
