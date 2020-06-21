@@ -47,13 +47,17 @@ INSTALLED_APPS = [
         'corsheaders'
 ]
 
+# from users.authentication import MyAuthentication
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES' : (
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES' : (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # MyAuthentication,
+        'users.authentication.MyAuthentication',
     ),
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
@@ -62,10 +66,19 @@ REST_FRAMEWORK = {
     ]
 }
 
+# csrf middleware variables
+CSRF_USE_SESSIONS = False
+CSRF_COOKIE_AGE = 5*60.0
+CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_COOKIE_SECURE = None
+CSRF_COOKIE_HTTPONLY = None
+CSRF_COOKIE_SAMESITE = 'Strict'
+
+
+USER_ID_CLAIM = 'user_id'
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'AUTH_COOKIE':'Authorization',
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60*3),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
@@ -76,9 +89,9 @@ SIMPLE_JWT = {
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
     'TOKEN_TYPE_CLAIM': 'token_type',
 
-    'CSRF_COOKIE_NAME': 'csrftoken',
-    'CSRF_HEADER_NAME': 'cserfheader'
-
+    # custom variables added specifically for this project
+    'JWT_TOKEN_COOKIE': True,   # this means that csrf token will be send through cookie and will be checked through X-CSRFToken header
+    'JWT_TOKEN_COOKIE_NAME': 'token',
 }
 
 # CORS_ORIGIN_ALLOW_ALL = True

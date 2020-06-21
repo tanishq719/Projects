@@ -40,6 +40,16 @@ class UsersRegistrationSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+
+class MyUserLoginSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Users
+        fields = ['username', 'password']
+        extra_kwargs = {'password':{'read_only':True}}
+
+    # def save(self):
+
+
 class UsersLoginSerializer(TokenObtainPairSerializer):
 
     # @classmethod
@@ -63,10 +73,10 @@ class UsersLoginSerializer(TokenObtainPairSerializer):
         data = {}
         data['refresh'] = str(refresh)
         data['access'] = str(refresh.access_token)
-        image_file = json.dumps(str(user.dp))
-        data['user'] = {'username':user.username,'first_name':user.first_name,'last_name':user.last_name,
-                        'join_date':user.join_date, 'email':user.email, 'last_login':user.last_login,
-                        'reputation':user.reputation, 'like_count':user.like_count, 'dislike_count':user.dislike_count,
-                        'reply_count':user.reply_count, 'description':user.description, 'dp':image_file}
+        # image_file = json.dumps(str(user.dp))
+        # data['user'] = {'username':user.username,'first_name':user.first_name,'last_name':user.last_name,
+        #                 'join_date':user.join_date, 'email':user.email, 'last_login':user.last_login,
+        #                 'reputation':user.reputation, 'like_count':user.like_count, 'dislike_count':user.dislike_count,
+        #                 'reply_count':user.reply_count, 'description':user.description, 'dp':image_file}
 
         return data

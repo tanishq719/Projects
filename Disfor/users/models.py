@@ -114,12 +114,6 @@ class Users(AbstractBaseUser):
             like_count=values['like_count'],dislike_count=values['dislike_count'],
             reply_count=values['reply_count'],description=values['description'],
             dp=values['dp'])
-
-    @staticmethod
-    def getImage(dpPath:str):
-        print(dpPath)
-        print(Image.open(dpPath))
-        return np.array(Image.open(dpPath))
         
     
 #@@@@ USERS HISTORY TABLE @@@@
