@@ -55,9 +55,9 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES' : (
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         # MyAuthentication,
-        'users.authentication.MyAuthentication',
+        # 'users.authentication.MyAuthentication',
     ),
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
@@ -67,17 +67,18 @@ REST_FRAMEWORK = {
 }
 
 # csrf middleware variables
-CSRF_USE_SESSIONS = False
-CSRF_COOKIE_AGE = 5*60.0
-CSRF_COOKIE_NAME = 'csrftoken'
-CSRF_COOKIE_SECURE = None
-CSRF_COOKIE_HTTPONLY = None
-CSRF_COOKIE_SAMESITE = 'Strict'
+# CSRF_USE_SESSIONS = False
+# CSRF_COOKIE_AGE = 5*60.0
+# CSRF_COOKIE_NAME = 'csrftoken'
+# CSRF_COOKIE_SECURE = None
+# CSRF_COOKIE_HTTPONLY = None
+# CSRF_COOKIE_SAMESITE = 'Lax'
+# CSRF_COOKIE_PATH = '/'
 
 
 USER_ID_CLAIM = 'user_id'
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60*3),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 
     'ALGORITHM': 'HS256',
@@ -91,17 +92,36 @@ SIMPLE_JWT = {
 
     # custom variables added specifically for this project
     'JWT_TOKEN_COOKIE': True,   # this means that csrf token will be send through cookie and will be checked through X-CSRFToken header
-    'JWT_TOKEN_COOKIE_NAME': 'token',
+    'JWT_HTTPONLY_TOKEN_COOKIE_NAME': 'httponly_token',
 }
 
 # CORS_ORIGIN_ALLOW_ALL = True
 
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-xss-protection',
+    'x-frame-options',
+    'x-csrftoken',
+    'x-requested-with',
+    'access-control-allow-credentials', # this header was not present therefore chrome isnt accepting cookie
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost', # this was not present therefore chrome isnt accepting cookie
+]
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:8080',
+    'http://localhost',
 ]
 
 CORS_ORIGIN_REGEX_WHITELIST = [
-    'http://localhost:8080',
+    'http://localhost',
     r"^https://\w+\.ecommerce.herokuapp\.com$",
 ]
 
@@ -110,7 +130,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',

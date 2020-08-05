@@ -9,7 +9,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 import numpy as np
 
 class UserManager(BaseUserManager):
-    def create_user(self, username, first_name='Gully', last_name="Boy", join_date=None,
+    def create_user(self, username, first_name, last_name, join_date=None,
                     email=None, last_login=None, reputation=0, password=None,
                     like_count=0, dislike_count=0, reply_count=0,description='',dp = None):
         if not username:
@@ -32,13 +32,14 @@ class UserManager(BaseUserManager):
             dp = dp
         )
         user_obj.set_password(password)
-        user_obj.save(using=self._db)
+        # user_obj.save(using=self._db)
+        user_obj.save()
         return user_obj
 
-    def create_superuser(self, username, first_name='Gully', last_name="Boy", join_date=None,
+    def create_superuser(self, username, first_name, last_name, join_date=None,
                     email=None, last_login=None, reputation=0, password=None,
                     like_count=0, dislike_count=0, reply_count=0,description='',dp = None):
-        return create_user(username,first_name,last_name,join_date,email,last_login,reputation, password,like_count,dislike_count,reply_count,description,dp)
+        return self.create_user(username,first_name,last_name,join_date,email,last_login,reputation, password,like_count,dislike_count,reply_count,description,dp)
 
 class Users(AbstractBaseUser):
 
