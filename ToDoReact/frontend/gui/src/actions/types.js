@@ -1,0 +1,5 @@
+ export const GET_TODOS = "GET_TODOS"
+ export const LOGIN = "LOGIN"
+ export const ADD_USER = "ADD_USER"
+ export const ADD_TODOS = "ADD_TODOS"
+ export const DELETE_TODOS = "DELETE_TODOS"

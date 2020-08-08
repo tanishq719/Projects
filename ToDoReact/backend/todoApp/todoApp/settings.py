@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = 'todoList.MyUser'
 
 # Application definition
 
@@ -38,16 +39,57 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'customer',
-    'admin',
-    'rest_framework'
+    'rest_framework',
+    'rest_framework.authtoken',
+    'todoList'
 ]
 
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-xss-protection',
+    'x-frame-options',
+    'x-csrftoken',
+    'x-requested-with',
+    # this header was not present therefore chrome isnt accepting cookie
+    'access-control-allow-credentials',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost',  # this was not present therefore chrome isnt accepting cookie
+    'http://192.168.43.77',
+]
+
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost',
+    'http://192.168.43.77:3000/',
+]
+
+CORS_ORIGIN_REGEX_WHITELIST = [
+    'http://localhost',
+    'http://192.168.43.77:3000/',
+    r"^https://\w+\.ecommerce.herokuapp\.com$",
+]
+
+AUTHENTICATION_BACKENDS = (
+        'django.contrib.auth.backends.RemoteUserBackend',
+        'django.contrib.auth.backends.ModelBackend',
+)
+
+
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -122,3 +164,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}

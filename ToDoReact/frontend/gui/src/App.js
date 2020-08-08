@@ -1,26 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {Component} from 'react'; 
+import Login from './Login'
+import ToDo from './ToDo'
+import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export class App extends Component {
+  static propTypes = {
+    auth:PropTypes.string.isRequired,
+    loggedin:PropTypes.bool.isRequired
+  };
+
+  onClick = (e) =>{
+    localStorage.setItem('token','0')
+    window.location.reload()
+  }
+
+  render(){
+    return (
+      <div className="App">
+        <nav className="navbar navbar-light bg-light" style={{justifyContent:"center"}}>
+          <a className="navbar-brand my-auto" href="/">My ToDo List</a>
+          {this.props.token!=='0' ?<button onClick={this.onClick} className="btn btn-outline-info my-2 my-sm-0" style={{right:'5%',position:'absolute'}}>Logout</button>:<span></span>}
+          </nav>
+        {this.props.auth === '0'?<Login />:<ToDo/>}
+      </div>
+    );
+    }
 }
 
-export default App;
+const mapStateToProps = state => ({
+  auth: state.auth.token || '0',
+  loggedin: state.auth.loggedin
+})
+export default connect(mapStateToProps)(App);
