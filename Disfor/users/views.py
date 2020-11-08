@@ -13,9 +13,10 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.middleware import csrf
 from django.conf import settings as ST
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken,TokenError
 from rest_framework_simplejwt.settings import api_settings
 import json
+from .models import Users
 
 @api_view(['POST'])
 # @parser_classes([MultiPartParser])
@@ -40,7 +41,11 @@ def register(request):
 @api_view(['POST'])
 @permission_classes((permissions.IsAuthenticated,))
 def profile(request):
-    return Response({'data':'successfully identified'},status=200)
+    response = Users.objects.get(username=request.user.username).values().pop('password')
+    if response :
+        return Response(response,status=200)
+    else:
+        return Response({"msg":"user doesn't exists"},status=400)
 
 @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
@@ -77,6 +82,7 @@ class UsersLoginView(TokenObtainPairView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
+        print(request.data)
 
         try:
             serializer.is_valid(raise_exception=True)

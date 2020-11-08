@@ -50,23 +50,26 @@ class GetTodoList(generics.GenericAPIView):
         return self.request.user.has_todolist.all()
 
     def post(self, request, *args, **kwargs):
+        print(request.data)
         if request.user.is_staff:
             for u in MyUser.objects.all().values():
                 print(u)
                 data = list(TodoList.objects.filter(owner__id=u["id"]).values())
+                print(data)
                 for i,a in enumerate(data):
                     l = list(TodoItem.objects.filter(parent_list__id=a["id"]).values())
                     data[i]['items'] = l
                     data[i]['user'] = u["email"]
+                    print(data[i])
+            return Response({"data":data})
         else:
             data = list(TodoList.objects.filter(owner__id=request.user.id).values())
             for i,a in enumerate(data):
                 l = list(TodoItem.objects.filter(parent_list__id=a["id"]).values())
                 data[i]['items'] = l
                 # data[i]['user'] = None
-
-        return Response(data)
-
+            return Response({"data":data})
+            
 # class GetTodoListSet(viewsets.ModelViewSet):
 #     permission_classes = [
 #         permissions.IsAuthenticated

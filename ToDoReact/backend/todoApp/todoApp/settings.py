@@ -64,17 +64,17 @@ CORS_ALLOW_HEADERS = [
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost',  # this was not present therefore chrome isnt accepting cookie
-    'http://192.168.43.77',
+    'http://192.168.43.77:3000/',
 ]
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost',
-    'http://192.168.43.77:3000/',
+    'http://192.168.43.77',
 ]
 
 CORS_ORIGIN_REGEX_WHITELIST = [
     'http://localhost',
-    'http://192.168.43.77:3000/',
+    'http://192.168.43.77',
     r"^https://\w+\.ecommerce.herokuapp\.com$",
 ]
 

@@ -20,6 +20,7 @@ export class ToDoForm extends Component {
     }
 
     onChange = e => this.setState({[e.target.name]: e.target.value});
+    handelCheck = e => this.setState({[e.target.name]: e.target.checked});
 
     onSubmit = e => {
         e.preventDefault();
@@ -28,7 +29,7 @@ export class ToDoForm extends Component {
         this.props.addTodoList(listI)
         this.props.getTodos()
         this.setState({toggleForm:!toggleForm})
-        this.props.todoItem = !this.props.todoItem
+        // this.props.todoItem = !this.props.todoItem
     }
 
     componentDidMount(){
@@ -47,10 +48,10 @@ export class ToDoForm extends Component {
                 <div className="row">
                 <div className="col">
                     <label>List Title</label>
-                    <input onChange={this.onChange} className="form-control" type='text' name="listTitle" value={listTitle}/>
+                    <input onChange={this.onChange} className="form-control" type='text' name="listTitle" checked={listTitle}/>
                 </div>
                 <div className="col" style={{margin:"auto", marginLeft:'25%'}}>
-                    <input onChange={this.onChange} type="checkbox" className="form-check-input" name="priority" checked={priority}/>
+                    <input onChange={this.handelCheck} type="checkbox" className="form-check-input" name="priority" checked={priority}/>
                     <label className='form-check-label'>Set on Priority</label>
                 </div>
             </div>}

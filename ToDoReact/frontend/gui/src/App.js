@@ -7,7 +7,7 @@ import './App.css';
 
 export class App extends Component {
   static propTypes = {
-    auth:PropTypes.string.isRequired,
+    token:PropTypes.string.isRequired,
     loggedin:PropTypes.bool.isRequired
   };
 
@@ -23,14 +23,14 @@ export class App extends Component {
           <a className="navbar-brand my-auto" href="/">My ToDo List</a>
           {this.props.token!=='0' ?<button onClick={this.onClick} className="btn btn-outline-info my-2 my-sm-0" style={{right:'5%',position:'absolute'}}>Logout</button>:<span></span>}
           </nav>
-        {this.props.auth === '0'?<Login />:<ToDo/>}
+        {this.props.token === '0'?<Login />:<ToDo/>}
       </div>
     );
     }
 }
 
 const mapStateToProps = state => ({
-  auth: state.auth.token || '0',
+  token: state.auth.token || '0',
   loggedin: state.auth.loggedin
 })
 export default connect(mapStateToProps)(App);

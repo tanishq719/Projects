@@ -24,6 +24,7 @@ export class Login extends Component {
     render() {
         const {username,password} = this.state;
         return (
+            <div><h6 style={{margin:'5%', textAlign:'center'}}>Username: admin123@todo.com Password: admin123</h6>
             <div className="container col-md-4 mx-auto" style={{ marginTop: '5%' }}>
                 <div className="jumbotron" style={{ opacity: '0.95', backgroundColor:'#e3e5e6'}}>
                     <div className="jumbotron-content">
@@ -46,6 +47,7 @@ export class Login extends Component {
                         </form>
                     </div>
                 </div>
+             </div>
             </div>
         )
     }

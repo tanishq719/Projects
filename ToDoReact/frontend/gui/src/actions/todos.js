@@ -20,7 +20,7 @@ export const getTodos = () => (dispatch, getState) => {
         .then(res => {
             dispatch({
                 type: GET_TODOS,
-                payload: res.data
+                payload: res.data.data
             })
         })
         .catch(err => console.log(err))

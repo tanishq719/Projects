@@ -10,7 +10,7 @@ class Group(models.Model):
         ('PRI', 'Private')
     ]
     grp_id              = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    grp_name            = models.CharField(max_length=100, blank=False, null=False)
+    grp_name            = models.CharField(max_length=100, blank=False, null=False)# it should be title and of 20 length
     grp_creation_date   = models.DateField(auto_now_add=True)
     access_type         = models.CharField(max_length=3,null=False,blank=False,choices=CHOICES,default='PUB')
     description         = models.TextField(null=False,blank=False)
